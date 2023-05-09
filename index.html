@@ -66,6 +66,7 @@
                        placeholder="Input target repository's url, and then press enter">
             </p>
             <br/>
+            <progress class="progress is-success" value="0" max="100" id="progress"></progress>
           <script>
             const input = document.getElementById("searchInput");
             input.addEventListener("keyup", function (event) {
@@ -120,7 +121,7 @@
                     <label class="label">Search Range</label>
                     <div class="control">
                         <input id='rangeInput' class="input" type="number" step="1"
-                               placeholder="Input search range, default is 15">
+                               placeholder="Input search range, default is 20">
                     </div>
                 </div>
             </div>

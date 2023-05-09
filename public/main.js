@@ -1,5 +1,5 @@
 let settings = {
-    range: 15,
+    range: 20,
     token: ""
 }
 
@@ -17,14 +17,13 @@ function closeModal(id) {
 function saveSettings() {
     localStorage.setItem("settings", JSON.stringify({
         range: document.getElementById("rangeInput").value,
-        token: document.getElementById("tokenInput").value
+        token: document.getElementById("tokenInput").value,
     }));
     closeModal("settingsModal");
 }
 
 function loadSettings() {
     let settings_ = JSON.parse(localStorage.getItem("settings"));
-    console.log(settings_)
     if (settings_) {
         settings = settings_;
         document.getElementById("rangeInput").value = settings.range;
@@ -32,38 +31,62 @@ function loadSettings() {
     }
 }
 
-async function getUserStars(username) {
-    let res = await fetch("https://api.github.com/graphql", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${settings.token}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            query: `  query {
-    user(login: "${username}") {
-      starredRepositories(first: 100, orderBy: {field: STARRED_AT, direction: DESC}) {
-        edges {
-          node {
-            name
-            url
-            stargazerCount
-            primaryLanguage {
-              name
-            }
-          }
-        }
-      }
-    }
-  }`
-        })
-    });
-    let data = await res.json();
+async function getUserStars(username, target) {
     let repos = [];
-    data.data.user.starredRepositories.edges.forEach((edge) => {
-        repos.push(edge.node);
+    let remainTimes = 3;
+    const variables = {
+        username: username,
+        after: null,
+    };
+    while (remainTimes > 0) {
+        let res = await fetch("https://api.github.com/graphql", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${settings.token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: `query($username: String!, $after: String) {
+                                user(login: $username) {
+                                  starredRepositories(first: 100, after: $after, orderBy: {field: STARRED_AT, direction: DESC}) {
+                                    pageInfo {
+                                      endCursor
+                                      hasNextPage
+                                    }
+                                    edges {
+                                      node {
+                                        name
+                                        url
+                                        stargazerCount
+                                        primaryLanguage {
+                                          name
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }`
+                , variables
+            })
+        });
+        let data = await res.json();
+        const pageInfo = data.data.user.starredRepositories.pageInfo;
+        if (pageInfo.hasNextPage) {
+            variables.after = pageInfo.endCursor;
+        }
+        data.data.user.starredRepositories.edges.forEach((edge) => {
+            if (edge.node.url === target && remainTimes > 1) {
+                remainTimes = 1;
+            }
+            repos.push(edge.node);
+        });
+        remainTimes --;
+    }
+    let idx = repos.findIndex((repo) => {
+        return repo.url === target;
     });
-    return repos;
+    let range = Math.ceil(settings.range / 2);
+    return repos.slice(Math.max(0, idx - range), Math.min(repos.length, idx + range));
 }
 
 async function search(repo) {
@@ -101,7 +124,7 @@ async function search(repo) {
     let totalStars = new Map();
     for (let i = 0; i < users.length; i++) {
         let user = users[i];
-        let stars = await getUserStars(user);
+        let stars = await getUserStars(user, repo);
         stars.forEach((star) => {
             if (totalStars.get(star.name)) {
                 star.count = totalStars.get(star.name).count + 1;
@@ -118,7 +141,7 @@ async function search(repo) {
             return b.count - a.count;
         });
         let html = "";
-        for (let i = 0; i < settings.range; i++) {
+        for (let i = 0; i < Math.min(sorted.length, settings.range); i++) {
             let repo = sorted[i];
             html += `<tr>
                         <td><a href="${repo.url}" target="_blank">${repo.name}</a></td>
@@ -128,7 +151,9 @@ async function search(repo) {
                     </tr>`;
         }
         document.getElementById("resultTable").innerHTML = html;
+        document.getElementById("progress").value = i / users.length * 100;
     }
+    document.getElementById("progress").value = 100;
 }
 
 function init() {
