@@ -3,6 +3,8 @@ let settings = {
     token: ""
 }
 
+let currentRepo = "";
+
 function showModal(id) {
     document.getElementById(id).className = "modal is-active";
     if (id === "settingsModal") {
@@ -94,6 +96,7 @@ async function search(repo) {
     if (repo.endsWith("/")) {
         repo = repo.slice(0, -1);
     }
+    currentRepo = repo;
     let parts = repo.split("/");
     let owner = parts[parts.length - 2];
     let name = parts[parts.length - 1];
@@ -126,6 +129,9 @@ async function search(repo) {
     });
     let totalStars = new Map();
     for (let i = 0; i < users.length; i++) {
+        if (repo !== currentRepo) {
+            return;
+        }
         let user = users[i];
         let stars = await getUserStars(user, repo);
         stars.forEach((star) => {
@@ -152,6 +158,9 @@ async function search(repo) {
                         <td>${repo.stargazerCount}</td>
                         <td>${repo.primaryLanguage ? repo.primaryLanguage.name : ""}</td>
                     </tr>`;
+        }
+        if (repo !== currentRepo) {
+            return;
         }
         document.getElementById("resultTableBody").innerHTML = html;
         document.getElementById("progress").value = i / users.length * 100;
