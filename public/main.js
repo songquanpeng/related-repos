@@ -15,10 +15,11 @@ function closeModal(id) {
 }
 
 function saveSettings() {
-    localStorage.setItem("settings", JSON.stringify({
+    settings = {
         range: document.getElementById("rangeInput").value,
         token: document.getElementById("tokenInput").value,
-    }));
+    }
+    localStorage.setItem("settings", JSON.stringify(settings));
     closeModal("settingsModal");
 }
 
