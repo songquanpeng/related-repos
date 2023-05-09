@@ -153,7 +153,7 @@ async function search(repo) {
         for (let i = 0; i < Math.min(sorted.length, settings.range); i++) {
             let repo = sorted[i];
             html += `<tr>
-                        <td><a href="${repo.url}" target="_blank">${repo.name}</a></td>
+                        <td><a href="${repo.url}" target="_blank">${repo.name}</a> <a href="./?repo=${repo.url}" target="_blank">🔍</a></td>
                         <td>${repo.count}</td>
                         <td>${repo.stargazerCount}</td>
                         <td>${repo.primaryLanguage ? repo.primaryLanguage.name : ""}</td>
@@ -168,7 +168,14 @@ async function search(repo) {
     document.getElementById("progress").value = 100;
 }
 
-function init() {
+async function init() {
     loadSettings();
+    // get query
+    let query = new URLSearchParams(window.location.search);
+    let repo = query.get("repo");
+    if (repo) {
+        document.getElementById("searchInput").value = repo;
+        await search(repo);
+    }
 }
 
