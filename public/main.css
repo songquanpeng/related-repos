@@ -1,5 +1,5 @@
 body {
-    font-family: Verdana, Candara, Arial, Helvetica, Microsoft YaHei, sans-serif;
+    font-family: Helvetica, Microsoft YaHei, sans-serif;
     line-height: 1.6;
     margin: 0;
 }
@@ -87,7 +87,7 @@ img {
 
 .normal-container {
     margin: auto;
-    max-width: 960px;
+    max-width: 1190px;
     padding: 16px 16px;
     overflow-wrap: break-word;
     word-break: break-word;

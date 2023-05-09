@@ -1,5 +1,7 @@
-# Bulma Template
-> My template for Bulma.
+# Alternatives Finder
+> Find GitHub repository alternatives with stars.
+
+
 
 ## LICENSE
 MIT License.
