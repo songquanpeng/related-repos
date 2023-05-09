@@ -66,7 +66,7 @@
                        placeholder="Input target repository's url, and then press enter">
             </p>
             <br/>
-            <progress class="progress is-success" value="0" max="100" id="progress"></progress>
+            <progress class="progress is-success" value="0" max="100" id="progress" style="display: none"></progress>
           <script>
             const input = document.getElementById("searchInput");
             input.addEventListener("keyup", function (event) {
@@ -78,7 +78,7 @@
               }
             });
           </script>
-            <table class="table is-fullwidth is-hoverable is-bordered is-striped">
+            <table class="table is-fullwidth is-hoverable is-bordered is-striped" id="resultTable">
                 <thead>
                 <tr>
                     <th>Name</th>
@@ -87,7 +87,7 @@
                     <th>Primary Language</th>
                 </tr>
                 </thead>
-                <tbody id="resultTable">
+                <tbody id="resultTableBody">
                 </tbody>
             </table>
         </div>

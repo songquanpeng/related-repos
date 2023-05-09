@@ -96,6 +96,8 @@ async function search(repo) {
     let parts = repo.split("/");
     let owner = parts[parts.length - 2];
     let name = parts[parts.length - 1];
+    document.getElementById("progress").style.display = "block";
+    // document.getElementById("resultTable").style.display = "block";
     let res = await fetch("https://api.github.com/graphql", {
         method: "POST",
         headers: {
@@ -150,7 +152,7 @@ async function search(repo) {
                         <td>${repo.primaryLanguage ? repo.primaryLanguage.name : ""}</td>
                     </tr>`;
         }
-        document.getElementById("resultTable").innerHTML = html;
+        document.getElementById("resultTableBody").innerHTML = html;
         document.getElementById("progress").value = i / users.length * 100;
     }
     document.getElementById("progress").value = 100;
