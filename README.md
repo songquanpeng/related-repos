@@ -8,7 +8,7 @@ This approach allows you to uncover common projects and find repositories that s
 functionality, or areas of interest. 
 
 ## Demo
-https://songquanpeng.github.io/related-repos/
+https://related.justsong.cn
 
 ![screenshot](https://user-images.githubusercontent.com/39998050/237013252-4593d38d-4c67-4542-95cb-94bce803c871.png)
 
